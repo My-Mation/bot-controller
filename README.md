@@ -60,31 +60,31 @@
 
 ```mermaid
 flowchart TB
-    subgraph FlutterApp["Flutter Ground Control Station (bot_controller)"]
-        UI["Tactical HUD & Gamepad UI\n(CenterDisplay, DPad, ServoJog, DiamondButtons)"]
+    subgraph FlutterApp["Flutter Ground Control Station"]
+        UI["Tactical HUD and Gamepad UI"]
         
         subgraph StateManagement["Riverpod State Management"]
-            RC["RobotController\n(Command Dispatcher & Safety Interlock)"]
-            TC["TelemetryController\n(Asymmetric EMA Battery & State Filter)"]
+            RC["RobotController - Command and Safety"]
+            TC["TelemetryController - Filter and EMA"]
         end
         
-        WS["WebSocketService\n(Auto-reconnect, JSON stream & Heartbeat)"]
+        WS["WebSocketService"]
     end
 
     subgraph Hardware["ESP32 Robotic Platform"]
-        ESP["ESP32 WebSocket Server\n(AsyncTCP / WiFi SoftAP or STA)"]
-        IMU["MPU6050 / BNO055\n(Pitch, Roll, Accel, Gyro)"]
-        GPS["Neo-6M / Neo-8M GPS\n(Lat, Lng, Alt, Speed, Sats)"]
-        PWM["PCA9685 / Servo Drivers\n(Hexapod Legs / Gimbal)"]
-        BAT["ADC Voltage Divider\n(2S 18650 Battery Pack)"]
+        ESP["ESP32 WebSocket Server"]
+        IMU["MPU6050 / BNO055 IMU"]
+        GPS["Neo-6M / Neo-8M GPS"]
+        PWM["PCA9685 / Servo Drivers"]
+        BAT["ADC Voltage Divider"]
     end
 
-    UI -->|User Touch Events| RC
-    RC -->|JSON Command Packets| WS
-    WS <-->|Bidirectional WS Stream (ws://192.168.4.1:81)| ESP
-    ESP -->|High-Frequency Telemetry JSON| WS
-    WS -->|Raw Telemetry Stream| TC
-    TC -->|Smoothed & Filtered State| UI
+    UI -->|"User Touch Events"| RC
+    RC -->|"JSON Command Packets"| WS
+    WS <-->|"Bidirectional WS Stream Port 81"| ESP
+    ESP -->|"High-Frequency Telemetry"| WS
+    WS -->|"Raw Telemetry Stream"| TC
+    TC -->|"Smoothed State Updates"| UI
 
     ESP --> PWM
     IMU --> ESP
