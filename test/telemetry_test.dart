@@ -56,29 +56,34 @@ void main() {
       expect(telemetry.gps!.sats, equals(8));
     });
 
-    test('Computes 2S 18650 battery percent from batteryVoltage correctly', () {
-      // 8.0V = 100%
-      final tFull = Telemetry.fromJson({'batteryVoltage': 8.0});
-      expect(tFull.batteryPercent, equals(100.0));
-      expect(tFull.batteryVoltage, equals(8.0));
+    test('Computes 2S battery percent from batteryVoltage (4.5V to 8.1V) correctly', () {
+      // 8.1V = 100%
+      final tFull = Telemetry.fromJson({'batteryVoltage': 8.1});
+      expect(tFull.batteryPercent, closeTo(100.0, 0.001));
+      expect(tFull.batteryPercent?.round(), equals(100));
+      expect(tFull.batteryVoltage, equals(8.1));
 
-      // 7.0V = 50%
-      final tHalf = Telemetry.fromJson({'batteryVoltage': 7.0});
-      expect(tHalf.batteryPercent, equals(50.0));
-      expect(tHalf.batteryVoltage, equals(7.0));
+      // 6.3V = 50%
+      final tHalf = Telemetry.fromJson({'batteryVoltage': 6.3});
+      expect(tHalf.batteryPercent, closeTo(50.0, 0.001));
+      expect(tHalf.batteryPercent?.round(), equals(50));
+      expect(tHalf.batteryVoltage, equals(6.3));
 
-      // 6.0V = 0%
-      final tEmpty = Telemetry.fromJson({'batteryVoltage': 6.0});
-      expect(tEmpty.batteryPercent, equals(0.0));
-      expect(tEmpty.batteryVoltage, equals(6.0));
+      // 4.5V = 0%
+      final tEmpty = Telemetry.fromJson({'batteryVoltage': 4.5});
+      expect(tEmpty.batteryPercent, closeTo(0.0, 0.001));
+      expect(tEmpty.batteryPercent?.round(), equals(0));
+      expect(tEmpty.batteryVoltage, equals(4.5));
 
-      // > 8.0V clamped to 100%
+      // > 8.1V clamped to 100%
       final tOver = Telemetry.fromJson({'batteryVoltage': 8.4});
       expect(tOver.batteryPercent, equals(100.0));
+      expect(tOver.batteryPercent?.round(), equals(100));
 
-      // < 6.0V clamped to 0%
-      final tUnder = Telemetry.fromJson({'batteryVoltage': 5.5});
+      // < 4.5V clamped to 0%
+      final tUnder = Telemetry.fromJson({'batteryVoltage': 4.0});
       expect(tUnder.batteryPercent, equals(0.0));
+      expect(tUnder.batteryPercent?.round(), equals(0));
     });
 
     test('copyWith preserves and updates battery percent and voltage', () {

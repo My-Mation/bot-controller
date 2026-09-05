@@ -43,7 +43,7 @@ class _CenterDisplayState extends State<CenterDisplay> {
     final isConnected = widget.connectionState == ConnectionStateEnum.connected;
     final t = widget.telemetry;
 
-    final batteryPct = (t.batteryPercent?.toInt() ?? 100).clamp(0, 100);
+    final batteryPct = (t.batteryPercent?.round() ?? 100).clamp(0, 100);
     final batteryVolts = t.batteryVoltage;
     final rssi = t.wifiRSSI ?? -42;
     final lightState = t.light;

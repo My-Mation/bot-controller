@@ -1,4 +1,4 @@
-# 🎮 HexaBot Tactical Controller
+# HexaBot Tactical Controller
 
 <div align="center">
 
@@ -8,55 +8,55 @@
 ![WebSocket](https://img.shields.io/badge/Protocol-WebSockets-010101?style=for-the-badge&logo=socket.io&logoColor=white)
 ![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20iOS%20%7C%20Linux%20%7C%20Windows-4E73DF?style=for-the-badge)
 
-**A high-performance, cyberpunk tactical telemetry and ground control station (GCS) mobile application built with Flutter for multi-legged hexapods, robotic rovers, and ESP32-powered robotics.**
+**A high-performance, industrial tactical telemetry and ground control station (GCS) mobile application built with Flutter for multi-legged hexapods, robotic rovers, and ESP32-powered robotics.**
 
-[Features](#-key-features) • [Controller Layout](#-controller-layout--ui) • [System Architecture](#-system-architecture) • [Telemetry Protocol](#-telemetry--communication-protocol) • [Project Structure](#-project-structure) • [Getting Started](#-getting-started)
+[Features](#key-features) • [Controller Layout](#controller-layout--ui) • [System Architecture](#system-architecture) • [Telemetry Protocol](#telemetry--communication-protocol) • [Project Structure](#project-structure) • [Getting Started](#getting-started)
 
 </div>
 
 ---
 
-## ⚡ Key Features
+## Key Features
 
-* 🎛️ **Dual-Grip Gamepad UI:** Optimized for low-latency landscape tactile interaction with directional D-Pad, 4-button Diamond cluster, 6-key auxiliary matrix, and granular Servo Jog controls.
-* 🛰️ **Real-Time Glass Cockpit HUD:**
+* **Dual-Grip Gamepad UI:** Optimized for low-latency landscape tactile interaction with directional D-Pad, 4-button Diamond cluster, 6-key auxiliary matrix, and granular Servo Jog controls.
+* **Real-Time Glass Cockpit HUD:**
   * **Artificial Horizon & IMU Deck:** 3D pitch/roll horizon ball, roll arc indicator, inverted acceleration tilt circle, and angular velocity (Gyro XYZ) telemetry tiles.
   * **Interactive GPS Nav Deck:** Integrated OpenStreetMap (`flutter_map`) tracking live latitude, longitude, altitude, ground speed, satellite count, HDOP, and intelligent campus geolocation fallbacks.
-  * **6-Axis Servo Monitor:** Multi-channel PWM pulse width gauge (500μs – 2500μs) with real-time feedback and channel selector.
-* 🔋 **Smart 2S Li-ion Battery Management:**
-  * Tailored for dual 18650 battery packs ($6.0\text{V} - 8.0\text{V}$).
-  * Asymmetric Exponential Moving Average (EMA) filtering ($\alpha_{\text{drop}} = 0.03, \alpha_{\text{rise}} = 0.08$) to completely reject motor voltage sag and sudden load jitter.
-  * Multi-stage visual battery gauges (`100% - 0%` with adaptive color alert states).
-* 🚨 **Fail-Safe Safety Kill Switch & Diagnostics:** Instant app-level command isolation, ESP32 E-Stop trigger, live WebSocket ping/RSSI signal strength indicator, and headlight relay controls.
+  * **6-Axis Servo Monitor:** Multi-channel PWM pulse width gauge (500us - 2500us) with real-time feedback and channel selector.
+* **Smart 2S Li-ion Battery Management:**
+  * Calibrated for 2S battery packs across active operating range (4.5V to 8.1V).
+  * Asymmetric Exponential Moving Average (EMA) filtering (alpha_drop = 0.03, alpha_rise = 0.08) to reject motor voltage sag and load jitter.
+  * Multi-stage visual battery gauges (100% - 0% with adaptive color alert states).
+* **Fail-Safe Safety Kill Switch & Diagnostics:** Instant app-level command isolation, ESP32 E-Stop trigger, live WebSocket ping/RSSI signal strength indicator, and headlight relay controls.
 
 ---
 
-## 🕹️ Controller Layout & UI
+## Controller Layout & UI
 
 ```
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                                HEXABOT TACTICAL HUD                                    │
-├───────────────────┬────────────────────────────────────────────────┬───────────────────┤
-│    LEFT GRIP      │                 CENTRAL HUD                    │    RIGHT GRIP     │
-├───────────────────┼────────────────────────────────────────────────┼───────────────────┤
-│                   │ [● CONNECTED]  📶 -45dBm  🔋 84%|7.68V  💡 [ ] │                   │
-│      ┌───┐        │ [ KILL SWITCH ]                                │        ( Y )      │
-│      │ ▲ │        ├────────────────────────────────────────────────┤   ( X )     ( B ) │
-│  ┌───┼───┼───┐    │  [ HORIZON ]     [ GPS MAP ]     [ SERVOS ]    │        ( A )      │
-│  │ ◄ │   │ ► │    ├────────────────────────────────────────────────┤                   │
-│  └───┼───┼───┘    │  ┌──────────────────────────────────────────┐  │  ┌───┬───┬───┐    │
-│      │ ▼ │        │  │         Pitch: +4.2°   Roll: -1.8°       │  │  │ 1 │ 2 │ 3 │    │
-│      └───┘        │  │              ╭─────────╮                 │  │  ├───┼───┼───┤    │
-│                   │  │              │  ---o---│                 │  │  │ 4 │ 5 │ 6 │    │
-│  SERVO JOG [S3]   │  │              ╰─────────╯                 │  │  └───┴───┴───┘    │
-│  [ -10 ] [ +10 ]  │  │   Accel: 0.12G   |   Gyro: 2.1 rad/s     │  │   AUXILIARY KEYS  │
-│  Step: (●)10 ( )50│  └──────────────────────────────────────────┘  │   (CUSTOM ACTION) │
-└───────────────────┴────────────────────────────────────────────────┴───────────────────┘
++----------------------------------------------------------------------------------------+
+|                                HEXABOT TACTICAL HUD                                    |
++-------------------+------------------------------------------------+-------------------+
+|    LEFT GRIP      |                 CENTRAL HUD                    |    RIGHT GRIP     |
++-------------------+------------------------------------------------+-------------------+
+|                   | [ CONNECTED ]  RSSI: -45dBm  84% | 7.68V  [LIGHT]  |                   |
+|      +---+        | [ KILL SWITCH ]                                |        ( Y )      |
+|      | ^ |        +------------------------------------------------+   ( X )     ( B ) |
+|  +---+---+---+    |  [ HORIZON ]     [ GPS MAP ]     [ SERVOS ]    |        ( A )      |
+|  | < |   | > |    +------------------------------------------------+                   |
+|  +---+---+---+    |  +------------------------------------------+  |  +---+---+---+    |
+|      | v |        |  |         Pitch: +4.2 deg  Roll: -1.8 deg  |  |  | 1 | 2 | 3 |    |
+|      +---+        |  |              +---------+                 |  |  +---+---+---+    |
+|                   |  |              |  ---o---│                 |  |  | 4 | 5 | 6 |    |
+|  SERVO JOG [S3]   |  |              +---------+                 |  |  +---+---+---+    |
+|  [ -10 ] [ +10 ]  |  |   Accel: 0.12G   |   Gyro: 2.1 rad/s     |  |   AUXILIARY KEYS  |
+|  Step: (*)10 ( )50|  +------------------------------------------+  |   (CUSTOM ACTION) |
++-------------------+------------------------------------------------+-------------------+
 ```
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
 ```mermaid
 flowchart TB
@@ -94,11 +94,11 @@ flowchart TB
 
 ---
 
-## 📡 Telemetry & Communication Protocol
+## Telemetry & Communication Protocol
 
 All communication is transported over lightweight JSON packets over WebSocket (`ws://<robot-ip>:81`).
 
-### 1. Command Packet (App ➔ ESP32)
+### 1. Command Packet (App -> ESP32)
 ```json
 {
   "cmd": "walk",
@@ -109,7 +109,7 @@ All communication is transported over lightweight JSON packets over WebSocket (`
 }
 ```
 
-### 2. Telemetry Packet (ESP32 ➔ App)
+### 2. Telemetry Packet (ESP32 -> App)
 ```json
 {
   "type": "telemetry",
@@ -142,15 +142,15 @@ All communication is transported over lightweight JSON packets over WebSocket (`
 ```
 
 ### 3. Battery Filtering Formula
-For a 2S Li-ion battery ($V_{\text{min}} = 6.0\text{V}$, $V_{\text{max}} = 8.0\text{V}$):
+For the 2S battery pack across the active $V_{\text{min}} = 4.5\text{V}$ to $V_{\text{max}} = 8.1\text{V}$ range:
 
-$$\text{Percentage} = \text{clamp}\left( \frac{V - 6.0}{2.0} \times 100, 0.0, 100.0 \right)$$
+$$\text{Percentage} = \text{clamp}\left( \frac{V - 4.5}{3.6} \times 100, 0.0, 100.0 \right)$$
 
 $$\bar{V}_t = \bar{V}_{t-1} + \alpha (V_t - \bar{V}_{t-1}) \quad \text{where} \quad \alpha = \begin{cases} 0.03 & V_t < \bar{V}_{t-1} \text{ (motor sag filter)} \\ 0.08 & V_t \ge \bar{V}_{t-1} \text{ (voltage recovery)} \end{cases}$$
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 bot_controller/
@@ -185,10 +185,10 @@ bot_controller/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
-* [Flutter SDK](https://docs.flutter.dev/get-started/install) (`^3.11.5` or later)
+* Flutter SDK (`^3.11.5` or later)
 * An ESP32 or simulated WebSocket server broadcasting telemetry packets
 
 ### Installation & Run
@@ -216,6 +216,6 @@ bot_controller/
 
 ---
 
-## 🛡️ License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

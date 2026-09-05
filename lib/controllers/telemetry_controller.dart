@@ -74,7 +74,7 @@ class TelemetryController extends Notifier<TelemetryState> {
         final double alpha = (rawVoltage < _filteredVoltage!) ? 0.03 : 0.08;
         _filteredVoltage = _filteredVoltage! + alpha * (rawVoltage - _filteredVoltage!);
       }
-      _filteredPercent = ((_filteredVoltage! - 6.0) / 2.0 * 100.0).clamp(0.0, 100.0);
+      _filteredPercent = ((_filteredVoltage! - 4.5) / 3.6 * 100.0).clamp(0.0, 100.0);
     } else if (rawPercent != null) {
       if (_filteredPercent == null) {
         _filteredPercent = rawPercent.clamp(0.0, 100.0);

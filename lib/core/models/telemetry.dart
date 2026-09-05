@@ -128,7 +128,7 @@ class Telemetry {
     double? rawVoltage = (json['batteryVoltage'] as num?)?.toDouble();
     double? rawBattery = (json['batteryPercent'] as num?)?.toDouble();
     if (rawBattery == null && rawVoltage != null && rawVoltage > 0.0) {
-      rawBattery = ((rawVoltage - 6.0) / 2.0 * 100.0).clamp(0.0, 100.0);
+      rawBattery = ((rawVoltage - 4.5) / 3.6 * 100.0).clamp(0.0, 100.0);
     }
 
     return Telemetry(
@@ -169,10 +169,10 @@ class Telemetry {
 
     double? rawBattery = json.containsKey('batteryPercent')
         ? (json['batteryPercent'] as num?)?.toDouble()
-        : (batteryPercent ?? (rawVoltage != null && rawVoltage > 0.0 ? ((rawVoltage - 6.0) / 2.0 * 100.0).clamp(0.0, 100.0) : null));
+        : (batteryPercent ?? (rawVoltage != null && rawVoltage > 0.0 ? ((rawVoltage - 4.5) / 3.6 * 100.0).clamp(0.0, 100.0) : null));
 
     if (json.containsKey('batteryVoltage') && !json.containsKey('batteryPercent') && rawVoltage != null && rawVoltage > 0.0) {
-      rawBattery = ((rawVoltage - 6.0) / 2.0 * 100.0).clamp(0.0, 100.0);
+      rawBattery = ((rawVoltage - 4.5) / 3.6 * 100.0).clamp(0.0, 100.0);
     }
 
     return Telemetry(
